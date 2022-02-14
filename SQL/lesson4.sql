@@ -315,8 +315,71 @@ FROM t2;
 
 -- 13.4 For the customer that spent the most (in total over their lifetime as a customer) total_amt_usd,
 -- how many web_events did they have for each channel?
-...
+-- The following is my solution:
+WITH t1 AS (
+  SELECT a.name AS acc_name, SUM(total_amt_usd) AS total_usd
+FROM accounts AS a
+JOIN orders AS o
+ON o.account_id=a.id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1)
 
+SELECT w.channel, COUNT(*) AS events
+FROM web_events AS w
+JOIN accounts AS a
+ON w.account_id=a.id
+WHERE a.name=(SELECT acc_name FROM t1)
+GROUP BY 1
+ORDER BY 2 DESC
+
+-- The following is the solution from Udacity:
+WITH t1 AS (
+   SELECT a.id, a.name, SUM(o.total_amt_usd) tot_spent
+   FROM orders o
+   JOIN accounts a
+   ON a.id = o.account_id
+   GROUP BY a.id, a.name
+   ORDER BY 3 DESC
+   LIMIT 1)
+SELECT a.name, w.channel, COUNT(*)
+FROM accounts a
+JOIN web_events w
+ON a.id = w.account_id AND a.id =  (SELECT id FROM t1)
+GROUP BY 1, 2
+ORDER BY 3 DESC;
+
+-- 13.5 What is the lifetime average amount spent in terms of total_amt_usd for the top 10 total spending accounts?
+-- The following is my solution (which is the same than Udacity):
+WITH t1 AS (
+  SELECT a.name, SUM(total_amt_usd) AS total_usd
+FROM accounts AS a
+JOIN orders AS o
+ON a.id=o.account_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10)
+SELECT AVG(total_usd) AS avg_usd
+FROM t1
+
+-- 13.6 What is the lifetime average amount spent in terms of total_amt_usd, including only the companies that spent more per order, on average, than the average of all orders.
+-- My solution a bit different than the one provided by Udacity:
+WITH t1 AS (
+SELECT AVG(total_amt_usd) AS avg
+FROM orders AS o
+JOIN accounts AS a
+ON o.account_id=a.id),
+t2 AS (
+  SELECT a.name, AVG(o.total_amt_usd) AS avg_usd
+FROM accounts AS a
+  JOIN orders AS o
+  ON a.id=o.account_id
+  GROUP BY 1
+  HAVING AVG(o.total_amt_usd) > (SELECT avg FROM t1)
+)
+
+SELECT AVG(avg_usd) AS average
+FROM t2
 
 
 
