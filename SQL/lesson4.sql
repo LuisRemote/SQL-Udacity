@@ -47,7 +47,7 @@ FROM (SELECT reg_name, MAX(total_usd) as total_usd
            JOIN orders AS o
            ON o.account_id=a.id
            GROUP BY s.name, r.name
-      ORDER BY 3 DESC) t1
+           ORDER BY 3 DESC) t1
       GROUP BY 1
 ORDER BY 2 DESC) t2
 JOIN (SELECT s.name AS sal_name, r.name AS reg_name, SUM(o.total_amt_usd) AS total_usd
@@ -74,16 +74,16 @@ ON s.id=a.sales_rep_id
 JOIN orders AS o
 ON a.id=o.account_id
 JOIN (SELECT r.name AS reg_name, SUM(o.total_amt_usd) AS total_amt_usd
-FROM region AS r
-JOIN sales_reps AS s
-ON r.id=s.region_id
-JOIN accounts AS a
-ON s.id=a.sales_rep_id
-JOIN orders AS o
-ON a.id=o.account_id
-GROUP BY 1
-ORDER BY 2 DESC
-LIMIT 1) t1
+     FROM region AS r
+     JOIN sales_reps AS s
+     ON r.id=s.region_id
+     JOIN accounts AS a
+     ON s.id=a.sales_rep_id
+     JOIN orders AS o
+     ON a.id=o.account_id
+     GROUP BY 1
+     ORDER BY 2 DESC
+     LIMIT 1) t1
 ON t1.reg_name=r.name
 GROUP BY 1
 
@@ -98,14 +98,14 @@ FROM (SELECT a.name AS name, SUM(o.total) as orders
       ON a.id=o.account_id
       GROUP BY 1
       HAVING SUM(o.total) > (SELECT orders
-               FROM (SELECT a.name AS name, SUM(o.standard_qty) AS total_standard, SUM(o.total) AS orders
-                    FROM accounts AS a
-	  	    JOIN orders AS o
-		    ON a.id=o.account_id
-		    GROUP BY 1
-		    ORDER BY 2 DESC
-		    LIMIT 1) t1)
-	       ORDER BY 2 DESC) t2
+                             FROM (SELECT a.name AS name, SUM(o.standard_qty) AS total_standard, SUM(o.total) AS orders
+                                   FROM accounts AS a
+	  	                   JOIN orders AS o
+		                   ON a.id=o.account_id
+		                   GROUP BY 1
+		                   ORDER BY 2 DESC
+		                   LIMIT 1) t1)
+      ORDER BY 2 DESC) t2
 
 
 -- 8.4 For the customer that spent the most (in total over their lifetime as a customer) total_amt_usd,
@@ -121,7 +121,7 @@ WHERE a.name = (SELECT t1.name
 		ON a.id=o.account_id
 		GROUP BY 1
 		ORDER BY 2 DESC
-	LIMIT 1) t1)
+         	LIMIT 1) t1)
 GROUP BY 1, 2
 ORDER BY 3 DESC
 
@@ -155,31 +155,29 @@ HAVING AVG(o.total_amt_usd) > (SELECT AVG(o.total_amt_usd) AS avg_usd
 
 -- 13.1 Provide the name of the sales_rep in each region with the largest amount of total_amt_usd sales
 WITH table1 AS (SELECT s.name AS sales_name, r.name AS reg_name, SUM(o.total_amt_usd) AS total_usd
-	FROM region AS r
-	JOIN sales_reps AS s
-	ON r.id=s.region_id
-	JOIN accounts AS a
-	ON s.id=a.sales_rep_id
-	JOIN orders AS o
-	ON o.account_id=a.id
-	GROUP BY 1, 2
-	ORDER BY 3 DESC),
+		FROM region AS r
+		JOIN sales_reps AS s
+		ON r.id=s.region_id
+		JOIN accounts AS a
+		ON s.id=a.sales_rep_id
+		JOIN orders AS o
+		ON o.account_id=a.id
+		GROUP BY 1, 2
+		ORDER BY 3 DESC),
 
      table2 AS (SELECT t1.reg_name, MAX(t1.total_usd) as max_usd
-	FROM (
-        SELECT s.name AS sales_name, r.name AS reg_name, SUM(o.total_amt_usd) AS total_usd
-        FROM region AS r
-        JOIN sales_reps AS s
-        ON r.id=s.region_id
-        JOIN accounts AS a
-        ON s.id=a.sales_rep_id
-        JOIN orders AS o
-        ON o.account_id=a.id
-        GROUP BY 1, 2
-        ORDER BY 3 DESC
-        ) t1
-	GROUP BY 1
-	ORDER BY 2 DESC)
+		FROM (SELECT s.name AS sales_name, r.name AS reg_name, SUM(o.total_amt_usd) AS total_usd
+			FROM region AS r
+			JOIN sales_reps AS s
+			ON r.id=s.region_id
+			JOIN accounts AS a
+			ON s.id=a.sales_rep_id
+			JOIN orders AS o
+			ON o.account_id=a.id
+			GROUP BY 1, 2
+			ORDER BY 3 DESC) t1
+		GROUP BY 1
+		ORDER BY 2 DESC)
 
 SELECT tb1.sales_name, tb2.reg_name, tb2.max_usd
 FROM table1 AS tb1
@@ -317,7 +315,7 @@ FROM t2;
 -- how many web_events did they have for each channel?
 -- The following is my solution:
 WITH t1 AS (
-  SELECT a.name AS acc_name, SUM(total_amt_usd) AS total_usd
+SELECT a.name AS acc_name, SUM(total_amt_usd) AS total_usd
 FROM accounts AS a
 JOIN orders AS o
 ON o.account_id=a.id
@@ -352,7 +350,7 @@ ORDER BY 3 DESC;
 -- 13.5 What is the lifetime average amount spent in terms of total_amt_usd for the top 10 total spending accounts?
 -- The following is my solution (which is the same than Udacity):
 WITH t1 AS (
-  SELECT a.name, SUM(total_amt_usd) AS total_usd
+SELECT a.name, SUM(total_amt_usd) AS total_usd
 FROM accounts AS a
 JOIN orders AS o
 ON a.id=o.account_id
