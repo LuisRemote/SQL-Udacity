@@ -40,3 +40,40 @@ FROM (SELECT name, CASE WHEN LEFT(UPPER(name), 1) IN ('A', 'E', 'I', 'O', 'U')
 	     CASE WHEN LEFT(UPPER(name), 1) IN ('A', 'E', 'I', 'O', 'U')
 	     THEN 0 ELSE 1 END AS other
 FROM accounts) t1;
+
+-- Quiz 6: POSITION, STRPOS & SUBSTR
+
+-- 6.1 Use the accounts table to create first and last name columns that hold
+-- the first and last names for the primary_poc (Mi solucion)
+SELECT LEFT(primary_poc, STRPOS(primary_poc, ' ')-1) AS name
+       RIGHT(primary_poc, LENGTH(primary_poc)-STRPOS(primary_poc, ' ') AS last_name
+FROM accounts;
+
+-- 6.2 Now see if you can do the same thing for every rep name in the sales_reps
+-- table. Again provide first and last name columns (Mi solucion)
+SELECT LEFT(name, STRPOS(name, ' ')-1) AS name,
+       RIGHT(name, LENGTH(name)-STRPOS(name, ' ')) AS last_name
+FROM sales_reps;
+
+-- Quiz 9: CONCAT
+
+-- 9.1 Each company in the accounts table wants to create email address for
+-- each primary_poc. The email address should be the first name of the
+-- primary_poc . last name primary_poc @ company name .com. (Mi solucion)
+WITH table1 AS (
+SELECT  LEFT(primary_poc, STRPOS(primary_poc, ' ')-1) AS poc_name,
+	RIGHT(primary_poc, LENGTH(primary_poc)-STRPOS(primary_poc, ' ')) AS poc_last,
+	name AS company
+FROM accounts
+)
+
+SELECT CONCAT(poc_name,'.',poc_last,'@',company,'.com') AS email
+FROM table1;
+
+
+
+
+
+
+
+--
