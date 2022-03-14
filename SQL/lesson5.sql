@@ -92,8 +92,55 @@ FROM table1;
 -- letter of their last name (lowercase), the number of letters in their first
 -- name, the number of letters in their last name, and then the name of the
 -- company they are working with, all capitalized with no spaces
+WITH table1 AS (
+SELECT LEFT(primary_poc, STRPOS(primary_poc, ' ')-1) AS poc_name,
+       RIGHT(primary_poc, LENGTH(primary_poc)-STRPOS(primary_poc, ' ')) AS poc_last,
+       UPPER(REPLACE(name, ' ', '')) AS company
+FROM accounts),
+table2 AS (
+SELECT LOWER(LEFT(poc_name, 1)) AS one,
+       LOWER(RIGHT(poc_name, 1)) AS two,
+       LOWER(LEFT(poc_last, 1)) AS three,
+       LOWER(RIGHT(poc_last, 1)) AS four,
+       LENGTH(poc_name) AS five,
+       LENGTH(poc_last) AS six,
+       company AS seven
+FROM table1)
+
+SELECT CONCAT(one,two,three,four,five,six,seven) AS pdw
+FROM table2;
+
+-- Quiz 12: CAST
+-- For this set of quiz questions, you are going to be working with a single
+-- table in the environment below. This is a different dataset than Parch
+-- & Posey, as all of the data in that particular dataset were already clean.
+SELECT *,
+       CONCAT(SUBSTR(date,7,4),'-',SUBSTR(date,1,2),'-',SUBSTR(date,4,2)) AS new_date,
+       CAST(CONCAT(SUBSTR(date,7,4),'-',SUBSTR(date,1,2),'-',SUBSTR(date,4,2)) AS date) AS formated_date
+FROM sf_crime_data;
+
+-- Quiz 15: COALESCE
+-- In this quiz, we will walk through the previous example using the following
+-- task list. We will use the COALESCE function to complete the orders record
+-- for the row in the table output
+SELECT COALESCE(a.id, o.id) AS filled_id,
+a.name, a.website, a.lat, a.long,
+a.primary_poc, a.sales_rep_id,
+COALESCE(account_id, a.id) AS new_account_id,
+COALESCE(o.standard_qty, 0) AS standard_qty,
+COALESCE(o.poster_qty, 0) AS poster_qty,
+COALESCE(o.gloss_qty, 0) AS gloss_qty,
+COALESCE(o.total, 0) AS total,
+o.occurred_at,
+COALESCE(o.standard_amt_usd, 0) AS standard_amt_usd,
+COALESCE(o.gloss_amt_usd, 0) AS gloss_amt_usd,
+COALESCE(o.poster_amt_usd, 0) AS poster_amt_usd,
+COALESCE(o.total_amt_usd, 0) AS total_amt_usd
+FROM accounts a
+LEFT JOIN orders o
+ON a.id = o.account_id;
+--WHERE o.total IS NULL;
 
 
 
 
---
