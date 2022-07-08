@@ -126,7 +126,7 @@ FROM sf_crime_data;
 SELECT COALESCE(a.id, o.id) AS filled_id,
 a.name, a.website, a.lat, a.long,
 a.primary_poc, a.sales_rep_id,
-COALESCE(account_id, a.id) AS new_account_id,
+COALESCE(o.account_id, a.id) AS new_account_id,
 COALESCE(o.standard_qty, 0) AS standard_qty,
 COALESCE(o.poster_qty, 0) AS poster_qty,
 COALESCE(o.gloss_qty, 0) AS gloss_qty,
