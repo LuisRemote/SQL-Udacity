@@ -86,4 +86,52 @@ WINDOW account_year_window AS (PARTITION BY account_id ORDER BY DATE_TRUNC('year
 -- analysis. You'll need to use occurred_at and total_amt_usd in the orders table along with
 -- LEAD to do so. In your query results, there should be four columns: occurred_at,
 -- total_amt_usd, lead and lead_difference
+-- Mi solucion es diferente a la de Udacity, pero el resultado el mismo
+SELECT occurred_at, total_amt_usd,
+       LEAD(total_amt_usd) OVER (ORDER BY occurred_at) AS lead,
+       LEAD(total_amt_usd) OVER (ORDER BY occurred_at) - total_amt_usd AS lead_difference
+FROM orders
+
+--=== Quiz 7: Percentiles ===--
+
+--7.1 Use the NTILE functionality to divide the accounts into 4 levels in terms of the amout of
+-- standard_qty for their orders. Your resulting table should have the account_id, the
+-- occurred_at time for each order, the total amount of standard_qty paper purchased, and
+-- one of four levels in a standard_quartile column.
+SELECT account_id, occurred_at, standard_qty,
+       NTILE(4) OVER (ORDER BY standard_qty) AS standard_quartile
+FROM orders
+ORDER BY account_id
+
+--7.2 Use the NTILE functionality to divide the accounts into two levels in terms of the amount
+-- of gloss_qty for theirs orders. Your resulting table should have the account_id, the
+-- occurred_at time for each order, the total amount of gloss_qty paper purchased, and one
+-- of two levels in a gloss_half column
+SELECT account_id, occurred_at, gloss_qty,
+       NTILE(2) OVER (ORDER BY gloss_qty) AS gloss_half
+FROM orders
+ORDER BY account_id
+
+--7.3 Use the NTILE functionality to divide the orders for each account into 100 levels in terms
+-- of the amount of total_amt_usd for their orders. Your resulting table should have the
+-- account_id, the occurred_at time for each order, the total amount of total_amt_usd paper
+-- purchased, and one of 100 levels in a total_percentile column.
+SELECT account_id, occurred_at, total_amt_usd,
+       NTILE(100) OVER (ORDER BY total_amt_usd) AS total_percentile
+FROM orders
+ORDER BY account_id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
